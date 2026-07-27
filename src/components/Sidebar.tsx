@@ -1,8 +1,8 @@
 import { Home, Search, Library, Music2 } from 'lucide-react';
 
 interface SidebarProps {
-  currentView: 'home' | 'search';
-  onNavigate: (view: 'home' | 'search') => void;
+  currentView: 'home' | 'search' | 'guide';
+  onNavigate: (view: 'home' | 'search' | 'guide') => void;
 }
 
 export default function Sidebar({ currentView, onNavigate }: SidebarProps) {
@@ -34,9 +34,14 @@ export default function Sidebar({ currentView, onNavigate }: SidebarProps) {
           <Search className="w-5 h-5" />
           Search
         </button>
-        <button className="w-full flex items-center gap-4 px-4 py-3 rounded-lg font-medium text-neutral-400 hover:text-white hover:bg-neutral-900 transition">
+        <button 
+          onClick={() => onNavigate('guide')}
+          className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg font-medium transition ${
+            currentView === 'guide' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'
+          }`}
+        >
           <Library className="w-5 h-5" />
-          Library
+          Setup Guide
         </button>
       </nav>
       

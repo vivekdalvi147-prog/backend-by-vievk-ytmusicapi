@@ -41,6 +41,17 @@ app.add_middleware(LoggingMiddleware)
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
 
+
+@app.get("/", tags=["System"])
+async def root():
+    return {
+        "message": "Welcome to VMusic API",
+        "docs_url": "/docs",
+        "status": "online",
+        "developer": "Vivek Dalvi"
+    }
+
 @app.get("/health", tags=["System"])
+
 async def health_check():
     return {"status": "healthy", "version": settings.VERSION}

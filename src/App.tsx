@@ -7,11 +7,12 @@ import { useState } from 'react';
 import Sidebar from './components/Sidebar';
 import HomeFeed from './components/HomeFeed';
 import SearchView from './components/SearchView';
+import GuideView from './components/GuideView';
 import Player from './components/Player';
 import { Song } from './types';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'search'>('home');
+  const [currentView, setCurrentView] = useState<'home' | 'search' | 'guide'>('guide');
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
 
   return (
@@ -35,11 +36,18 @@ export default function App() {
             >
               Search
             </button>
+            <button 
+              onClick={() => setCurrentView('guide')} 
+              className={`font-medium ${currentView === 'guide' ? 'text-white' : 'text-neutral-500'}`}
+            >
+              Guide
+            </button>
           </div>
         </div>
 
         {currentView === 'home' && <HomeFeed onPlaySong={setCurrentSong} />}
         {currentView === 'search' && <SearchView onPlaySong={setCurrentSong} />}
+        {currentView === 'guide' && <GuideView />}
       </main>
 
       {/* Persistent Player */}
