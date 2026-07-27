@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Terminal, Code, PlayCircle, Smartphone, Server, FileJson } from 'lucide-react';
+import { Terminal, Code, PlayCircle, Smartphone, Server, FileJson, AlertTriangle } from 'lucide-react';
 
 export default function App() {
   return (
@@ -20,6 +20,42 @@ export default function App() {
             Your backend is live at <code className="bg-neutral-100 text-blue-600 px-2 py-1 rounded">https://backend-by-vievk-ytmusicapi.onrender.com</code>. 
             Here is the complete guide to connecting your Android app to this API and playing music.
           </p>
+        </div>
+
+        {/* Not Found Explanation */}
+        <div className="bg-white rounded-2xl shadow-sm border border-red-200 overflow-hidden">
+          <div className="bg-red-50 px-6 py-4 border-b border-red-100 flex items-center gap-3">
+            <AlertTriangle className="w-5 h-5 text-red-500" />
+            <h2 className="text-lg font-semibold text-red-800">Why are you seeing {"{\"detail\":\"Not Found\"}"}?</h2>
+          </div>
+          <div className="p-6 space-y-4">
+            <p className="text-neutral-700">
+              This is completely normal! FastApi returns <code>{`{"detail": "Not Found"}`}</code> when you visit the main domain URL (<code>/</code>) because we didn't create a blank homepage. An API is meant to be accessed via specific <strong>endpoints</strong>.
+            </p>
+            <div className="bg-neutral-50 rounded-xl border border-neutral-200 p-5">
+              <p className="font-semibold text-neutral-900 mb-3">Try clicking these correct URLs instead:</p>
+              <ul className="space-y-4 text-sm">
+                <li>
+                  <a href="https://backend-by-vievk-ytmusicapi.onrender.com/docs" target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-800 hover:underline font-medium text-base flex items-center gap-2">
+                    🔗 https://backend-by-vievk-ytmusicapi.onrender.com/docs
+                  </a>
+                  <p className="text-neutral-500 mt-1">This opens the <strong>Swagger UI Documentation</strong> where you can see and test ALL your endpoints easily.</p>
+                </li>
+                <li>
+                  <a href="https://backend-by-vievk-ytmusicapi.onrender.com/api/v1/home" target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-800 hover:underline font-medium text-base flex items-center gap-2">
+                    🔗 https://backend-by-vievk-ytmusicapi.onrender.com/api/v1/home
+                  </a>
+                  <p className="text-neutral-500 mt-1">Returns the YT Music Home feed data in JSON format.</p>
+                </li>
+                <li>
+                  <a href="https://backend-by-vievk-ytmusicapi.onrender.com/api/v1/search?q=arijit%20singh" target="_blank" rel="noreferrer" className="text-blue-600 hover:text-blue-800 hover:underline font-medium text-base flex items-center gap-2">
+                    🔗 .../api/v1/search?q=arijit singh
+                  </a>
+                  <p className="text-neutral-500 mt-1">Tests the search API endpoint.</p>
+                </li>
+              </ul>
+            </div>
+          </div>
         </div>
 
         {/* Step 1: Retrofit Setup */}
