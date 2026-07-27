@@ -4,58 +4,64 @@ import { Copy, CheckCircle, Bot, Sparkles } from 'lucide-react';
 export default function PromptView() {
   const [copied, setCopied] = useState(false);
 
-  const promptText = `You are an Expert Android Developer specializing in Kotlin, MVVM, Jetpack Compose, and Media3 (ExoPlayer).
-I want to build a music streaming app named "VMusic".
+  const promptText = `Act as an Expert Senior Android Developer. I want to build a fully functional music streaming Android app named "VMusic" from scratch (0 to 100).
 
 I already have a custom Python FastAPI backend live at:
 BASE_URL = "https://backend-by-vievk-ytmusicapi.onrender.com/"
 
-Here are the strict requirements for the app:
+Here are the strict, step-by-step requirements for the app. Generate the complete production-ready code for all of these:
 
 ### 1. Architecture & Tech Stack
-- Kotlin, Jetpack Compose for UI
-- MVVM Architecture with Hilt/Dagger for Dependency Injection (optional but preferred)
-- Retrofit & Gson for API calls
-- Kotlin Coroutines & Flow for async operations
-- Jetpack Media3 (ExoPlayer & MediaSessionService) for background audio playback
-- Coil for image loading
+- **UI:** Kotlin, Jetpack Compose (Material 3, Dark Theme by default).
+- **Architecture:** MVVM (Model-View-ViewModel) with Clean Architecture principles.
+- **Dependency Injection:** Hilt / Dagger.
+- **Networking:** Retrofit & Gson for API calls.
+- **Async:** Kotlin Coroutines & Flow.
+- **Media Player:** Jetpack Media3 (ExoPlayer & MediaSessionService) for background audio playback.
+- **Image Loading:** Coil.
 
 ### 2. API Integration (Retrofit)
 All API responses follow this standard JSON wrapper:
 \`{ "success": true, "data": <Actual Data>, "message": null }\`
 
-Create the Retrofit interface for these endpoints:
-1. Home Feed: \`GET api/v1/home\`
-2. Search: \`GET api/v1/search?q={query}\`
+Create the Retrofit interface (\`VMusicApi\`) for these endpoints:
+1. **Home Feed:** \`GET api/v1/home\`
+2. **Search:** \`GET api/v1/search?q={query}&filter=songs\` 
+   *(Crucial: ALWAYS append \`&filter=songs\` to the search query to prevent backend crashes).*
 
-### 3. Music Playback Logic (CRITICAL STEP)
-The API returns a \`videoId\` for songs, NOT a direct .mp3 link. 
-You MUST implement stream extraction using \`youtubedl-android\` before passing the URL to ExoPlayer.
+### 3. CRITICAL: Music Stream Extraction Logic (How to Play Audio)
+The API returns a YouTube \`videoId\` for songs (e.g., "kJQP7kiw5Fk"). YOU CANNOT PASS THIS ID DIRECTLY TO EXOPLAYER. IT WILL FAIL AND STAY AT 0:00.
+You MUST implement stream extraction using the \`youtubedl-android\` library BEFORE passing the URL to ExoPlayer.
 
-Setup:
-- Add \`implementation("com.github.yausername.youtubedl-android:library:0.16.0")\`
-- Initialize \`YoutubeDL.getInstance().init(applicationContext)\` in Application class.
+**Extraction Logic (MUST Run in IO Coroutine):**
+1. Add dependency: \`implementation("com.github.yausername.youtubedl-android:library:0.16.0")\`
+2. Initialize in Application: \`YoutubeDL.getInstance().init(applicationContext)\`
+3. When a user clicks a song, show a "Loading" state in the UI.
+4. In an IO Coroutine, run:
+   \`val request = YoutubeDLRequest("https://music.youtube.com/watch?v=$videoId")\`
+   \`request.addOption("-f", "bestaudio")\`
+   \`val streamInfo = YoutubeDL.getInstance().getInfo(request)\`
+   \`val playableAudioUrl = streamInfo.url // <-- Direct .m4a link\`
+5. Pass \`playableAudioUrl\` to ExoPlayer, call \`prepare()\` and \`play()\` on the Main thread.
 
-Extraction Logic:
-\`\`\`kotlin
-val videoUrl = "https://music.youtube.com/watch?v=$videoId"
-val request = YoutubeDLRequest(videoUrl)
-request.addOption("-f", "bestaudio")
-val streamInfo = YoutubeDL.getInstance().getInfo(request)
-val playableAudioUrl = streamInfo.url // Pass THIS to ExoPlayer
-\`\`\`
+### 4. Background Playback & Media3 Service
+- Create a \`MediaSessionService\` so music plays seamlessly in the background.
+- Show a Media Notification with Play, Pause, Next, Previous actions.
+- Handle Player States (Loading, Playing, Paused, Error).
 
-### 4. Background Playback (Media3)
-- Create a \`MediaSessionService\` so music plays in the background and shows a notification controller.
-- Handle play, pause, next, and previous actions.
+### 5. UI Requirements (Jetpack Compose)
+1. **Home Screen:** Fetch from \`/home\` and display horizontal scrolling lists (\`LazyRow\`) for different sections (Top Charts, New Releases).
+2. **Search Screen:** A sticky search bar that calls \`/search\` and shows results in a \`LazyColumn\`.
+3. **Mini Player:** A persistent bottom bar showing the currently playing song title, artist, a play/pause button, and a progress bar.
+4. **Full Player Screen:** A modal/full-screen view showing large album art, song name, artist, interactive seek bar (Slider), and full media controls.
 
-### 5. UI Requirements (Dark Theme)
-- Home Screen: Fetch from \`/home\` and display horizontal scrolling lists (LazyRow) for different sections.
-- Search Screen: A search bar that calls \`/search\` and shows results in a LazyColumn.
-- Mini Player: A persistent bottom bar showing the currently playing song, play/pause button, and a progress bar.
-- Full Player Screen: Shows album art, song name, artist, seek bar, and full controls.
-
-Please provide the complete, step-by-step code to build this Android application, starting from the Gradle dependencies, Retrofit setup, ExoPlayer service, and finally the Compose UI screens.`;
+### Your Task:
+Please provide the complete, step-by-step code to build this app. Start with:
+1. \`build.gradle.kts\` (All required dependencies)
+2. Network layer (Retrofit, Data Classes)
+3. Media3 Service (ExoPlayer setup + YoutubeDL integration logic)
+4. ViewModels (with the loading state and extraction logic)
+5. Compose UI Screens (Home, Search, Player).`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(promptText);

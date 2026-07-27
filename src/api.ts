@@ -8,7 +8,8 @@ export async function fetchHome() {
 }
 
 export async function searchMusic(query: string) {
-  const res = await fetch(`${BASE_URL}/search?q=${encodeURIComponent(query)}`);
+  // Adding filter=songs prevents ytmusicapi from crashing on complex "Top Result" cards
+  const res = await fetch(`${BASE_URL}/search?q=${encodeURIComponent(query)}&filter=songs`);
   if (!res.ok) {
     const errorData = await res.json().catch(() => ({}));
     throw new Error(errorData.detail || 'Failed to search');

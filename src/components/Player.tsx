@@ -11,10 +11,11 @@ interface PlayerProps {
 
 export default function Player({ currentSong, onNext, onPrevious }: PlayerProps) {
   const [playing, setPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.8);
+  const [volume, setVolume] = useState(1);
   const [muted, setMuted] = useState(false);
   const [played, setPlayed] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [seeking, setSeeking] = useState(false);
   const playerRef = useRef<ReactPlayer>(null);
 
   useEffect(() => {
@@ -29,7 +30,7 @@ export default function Player({ currentSong, onNext, onPrevious }: PlayerProps)
   const thumbnail = currentSong.thumbnails?.[0]?.url || 'https://images.unsplash.com/photo-1614680376593-902f74a5cecb?auto=format&fit=crop&w=150&q=80';
 
   const formatTime = (seconds: number) => {
-    if (isNaN(seconds)) return '0:00';
+    if (isNaN(seconds) || seconds < 0) return '0:00';
     const date = new Date(seconds * 1000);
     const hh = date.getUTCHours();
     const mm = date.getUTCMinutes();
@@ -44,25 +45,37 @@ export default function Player({ currentSong, onNext, onPrevious }: PlayerProps)
     setPlayed(parseFloat(e.target.value));
   };
 
+  const handleSeekMouseDown = () => {
+    setSeeking(true);
+  };
+
   const handleSeekMouseUp = (e: React.MouseEvent<HTMLInputElement>) => {
+    setSeeking(false);
     if (playerRef.current) {
-      playerRef.current.seekTo(parseFloat((e.target as HTMLInputElement).value));
+      playerRef.current.currentTime = parseFloat((e.target as HTMLInputElement).value) * duration;
     }
   };
 
   return (
     <div className="fixed bottom-0 left-0 right-0 h-24 bg-neutral-900 border-t border-neutral-800 flex items-center px-4 sm:px-6 z-50 text-white">
       {/* Hidden YouTube Player */}
-      <div className="hidden">
+      <div style={{ position: 'fixed', top: '-9999px', left: '-9999px', width: '300px', height: '300px' }}>
         <ReactPlayer
           ref={playerRef}
-          url={url}
+          src={url}
           playing={playing}
           volume={volume}
           muted={muted}
-          onProgress={(state) => setPlayed(state.played)}
-          onDuration={(d) => setDuration(d)}
+          onTimeUpdate={(e: React.SyntheticEvent<HTMLVideoElement>) => {
+            if (!seeking && duration > 0) {
+              setPlayed(e.currentTarget.currentTime / duration);
+            }
+          }}
+          onDurationChange={(e: React.SyntheticEvent<HTMLVideoElement>) => {
+            setDuration(e.currentTarget.duration);
+          }}
           onEnded={onNext}
+          onError={(e) => console.log('ReactPlayer Error:', e)}
           config={{
             youtube: {
               playerVars: { showinfo: 0, controls: 0 }
@@ -106,7 +119,7 @@ export default function Player({ currentSong, onNext, onPrevious }: PlayerProps)
             max={0.999999}
             step="any"
             value={played}
-            onMouseDown={() => setPlaying(false)}
+            onMouseDown={handleSeekMouseDown}
             onChange={handleSeekChange}
             onMouseUp={handleSeekMouseUp}
             className="w-full h-1 bg-neutral-600 rounded-lg appearance-none cursor-pointer accent-white"
