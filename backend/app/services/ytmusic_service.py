@@ -8,7 +8,7 @@ class YTMusicService:
         self.yt = YTMusic()
 
     async def search(self, query: str, filter: str = None, limit: int = 20) -> List[Dict]:
-        return await asyncio.to_thread(self.yt.search, query, filter, limit)
+        return await asyncio.to_thread(self.yt.search, query, filter=filter, limit=limit)
 
     async def get_song(self, video_id: str) -> Dict:
         return await asyncio.to_thread(self.yt.get_song, video_id)
@@ -26,7 +26,7 @@ class YTMusicService:
         return await asyncio.to_thread(self.yt.get_album, browse_id)
 
     async def get_playlist(self, playlist_id: str, limit: int = 100) -> Dict:
-        return await asyncio.to_thread(self.yt.get_playlist, playlist_id, limit)
+        return await asyncio.to_thread(self.yt.get_playlist, playlistId=playlist_id, limit=limit)
 
     async def get_related(self, browse_id: str) -> Any:
         return await asyncio.to_thread(self.yt.get_song_related, browse_id)
