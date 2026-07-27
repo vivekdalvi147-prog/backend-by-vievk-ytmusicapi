@@ -8,11 +8,12 @@ import Sidebar from './components/Sidebar';
 import HomeFeed from './components/HomeFeed';
 import SearchView from './components/SearchView';
 import GuideView from './components/GuideView';
+import PromptView from './components/PromptView';
 import Player from './components/Player';
 import { Song } from './types';
 
 export default function App() {
-  const [currentView, setCurrentView] = useState<'home' | 'search' | 'guide'>('guide');
+  const [currentView, setCurrentView] = useState<'home' | 'search' | 'guide' | 'prompt'>('prompt');
   const [currentSong, setCurrentSong] = useState<Song | null>(null);
 
   return (
@@ -42,12 +43,19 @@ export default function App() {
             >
               Guide
             </button>
+            <button 
+              onClick={() => setCurrentView('prompt')} 
+              className={`font-medium ${currentView === 'prompt' ? 'text-white' : 'text-neutral-500'}`}
+            >
+              AI Prompt
+            </button>
           </div>
         </div>
 
         {currentView === 'home' && <HomeFeed onPlaySong={setCurrentSong} />}
         {currentView === 'search' && <SearchView onPlaySong={setCurrentSong} />}
         {currentView === 'guide' && <GuideView />}
+        {currentView === 'prompt' && <PromptView />}
       </main>
 
       {/* Persistent Player */}

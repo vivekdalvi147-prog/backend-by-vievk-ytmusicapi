@@ -1,8 +1,8 @@
-import { Home, Search, Library, Music2 } from 'lucide-react';
+import { Home, Search, Library, Music2, Bot } from 'lucide-react';
 
 interface SidebarProps {
-  currentView: 'home' | 'search' | 'guide';
-  onNavigate: (view: 'home' | 'search' | 'guide') => void;
+  currentView: 'home' | 'search' | 'guide' | 'prompt';
+  onNavigate: (view: 'home' | 'search' | 'guide' | 'prompt') => void;
 }
 
 export default function Sidebar({ currentView, onNavigate }: SidebarProps) {
@@ -42,6 +42,15 @@ export default function Sidebar({ currentView, onNavigate }: SidebarProps) {
         >
           <Library className="w-5 h-5" />
           Setup Guide
+        </button>
+        <button 
+          onClick={() => onNavigate('prompt')}
+          className={`w-full flex items-center gap-4 px-4 py-3 rounded-lg font-medium transition ${
+            currentView === 'prompt' ? 'bg-neutral-800 text-white' : 'text-neutral-400 hover:text-white hover:bg-neutral-900'
+          }`}
+        >
+          <Bot className="w-5 h-5" />
+          AI Prompt
         </button>
       </nav>
       
